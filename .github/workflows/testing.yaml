@@ -19,7 +19,7 @@ jobs:
           MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
         ports:
           - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        options: --health-cmd="mysqladmin ping -h localhost" --health-interval=10s --health-timeout=5s --health-retries=5
 
     steps:
     - name: Checkout code
@@ -35,11 +35,8 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --no-progress --prefer-dist --optimize-autoloader
 
-    - name: Set up .env file
-      run: |
-        cp .env.example .env
-        php artisan key:generate
-        php artisan config:cache
+    - name: Wait for MySQL to be ready
+      run: sleep 15
 
     - name: Test DB connection
       run: |
@@ -49,6 +46,7 @@ jobs:
             echo 'Connected successfully!';
         } catch (PDOException \$e) {
             echo 'Connection failed: ' . \$e->getMessage();
+            exit(1);
         }"
       env:
         DB_CONNECTION: mysql
