@@ -67,10 +67,4 @@ jobs:
         DB_DATABASE: ${{ secrets.DB_DATABASE }}
         DB_USERNAME: ${{ secrets.DB_USERNAME }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      run: php artisan test --log-junit=storage/test-reports/junit.xml
-
-    - name: Upload test report
-      uses: actions/upload-artifact@v3
-      with:
-        name: junit-report
-        path: storage/test-reports/junit.xml
+      run: php artisan test
