@@ -76,4 +76,4 @@ jobs:
         DB_DATABASE: u329657931_staging
         DB_USERNAME: u329657931_pantau
         DB_PASSWORD: LdimW&/8Zl!
-      run: php artisan test --env=production --no-interaction --stop-on-failure
+      run: php artisan test 
