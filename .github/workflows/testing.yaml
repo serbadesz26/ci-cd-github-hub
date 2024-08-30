@@ -94,7 +94,7 @@ jobs:
         php artisan key:generate
         php artisan config:cache
 
-    - name: Deploy to staging server
+    - name: Deploy to staging serverr
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
