@@ -83,7 +83,7 @@ jobs:
       with:
         php-version: '8.2'
         # extensions: mbstring, xml, ctype, json, mysqli, pdo_mysql, bcmath, fileinfo
-        # coverage: none 
+        coverage: none 
 
     - name: Install Composer dependencies
       run: composer install --no-progress --prefer-dist --optimize-autoloader
