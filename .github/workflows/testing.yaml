@@ -6,7 +6,7 @@ on:
       - staging
 
 jobs:
-  run-tests:
+  run-tests-app:
     runs-on: ubuntu-latest
 
     services:
@@ -49,22 +49,64 @@ jobs:
         php artisan key:generate
         php artisan config:cache
 
-    - name: Run database migrations
-      env:
-        DB_CONNECTION: mysql
-        DB_HOST: ${{ secrets.DB_HOST }}
-        DB_PORT: ${{ secrets.DB_PORT }}
-        DB_DATABASE: ${{ secrets.DB_DATABASE }}
-        DB_USERNAME: ${{ secrets.DB_USERNAME }}
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      run: php artisan migrate --seed --force
+    # - name: Run database migrations
+    #   env:
+    #     DB_CONNECTION: mysql
+    #     DB_HOST: ${{ secrets.DB_HOST }}
+    #     DB_PORT: ${{ secrets.DB_PORT }}
+    #     DB_DATABASE: ${{ secrets.DB_DATABASE }}
+    #     DB_USERNAME: ${{ secrets.DB_USERNAME }}
+    #     DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+    #   run: php artisan migrate --seed --force
 
     - name: Run unit tests
-      env:
-        DB_CONNECTION: mysql
-        DB_HOST: ${{ secrets.DB_HOST }}
-        DB_PORT: ${{ secrets.DB_PORT }}
-        DB_DATABASE: ${{ secrets.DB_DATABASE }}
-        DB_USERNAME: ${{ secrets.DB_USERNAME }}
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      # env:
+      #   DB_CONNECTION: mysql
+      #   DB_HOST: ${{ secrets.DB_HOST }}
+      #   DB_PORT: ${{ secrets.DB_PORT }}
+      #   DB_DATABASE: ${{ secrets.DB_DATABASE }}
+      #   DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      #   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       run: php artisan test
+
+  deploy-app-to-staging:
+    runs-on: ubuntu-latest
+
+    needs: run-tests-app
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        # extensions: mbstring, xml, ctype, json, mysqli, pdo_mysql, bcmath, fileinfo
+        coverage: none 
+
+    - name: Install Composer dependencies
+      run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+    - name: Set up .env file
+      run: |
+        cp .env.example .env
+        php artisan key:generate
+        php artisan config:cache
+
+    - name: Deploy to staging server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.PORT }}
+        script_stop: true
+        script: |
+          cd /home/u329657931/domains/pantaulistrik.com/public_html/staging_pantau
+          git pull origin staging
+
+
+
+
+    
