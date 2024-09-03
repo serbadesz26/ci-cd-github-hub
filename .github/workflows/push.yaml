@@ -3,7 +3,7 @@ name: Push Workflow Production Server
 on:
   push:
     branches:
-      - staging
+      - main
 
 jobs:
   run-tests-app:
