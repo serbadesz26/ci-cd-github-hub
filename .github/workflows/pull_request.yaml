@@ -46,7 +46,7 @@ jobs:
 
     - name: Set up .env file
       run: |
-        cp .env.staging .env
+        cp .env.example .env
         php artisan key:generate
         php artisan config:cache
 
